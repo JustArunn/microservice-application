@@ -1,5 +1,6 @@
 package com.arunn.companyservice.controller;
 
+import com.arunn.companyservice.VO.CompanyDTO;
 import com.arunn.companyservice.VO.CompanyDetailsVO;
 import com.arunn.companyservice.entity.Company;
 import com.arunn.companyservice.service.CompanyService;
@@ -18,6 +19,11 @@ public class CompanyController {
     @PostMapping
     public Company saveCompany(@RequestBody Company company){
         return companyService.saveCompany(company);
+    }
+
+    @PostMapping("/new")
+    public CompanyDTO saveFullCompany(@RequestBody CompanyDTO company){
+        return companyService.saveFullCompany(company);
     }
 
     @GetMapping
