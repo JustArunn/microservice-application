@@ -5,6 +5,8 @@ import com.arunn.companyservice.VO.CompanyDetailsVO;
 import com.arunn.companyservice.VO.Department;
 import com.arunn.companyservice.VO.User;
 import com.arunn.companyservice.entity.Company;
+import com.arunn.companyservice.exception.ResourceAlreadyExistsException;
+import com.arunn.companyservice.exception.ResourceNotFoundException;
 import com.arunn.companyservice.repository.CompanyRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.ParameterizedTypeReference;
@@ -26,6 +28,10 @@ public class CompanyService {
     private final RestTemplate restTemplate;
 
     public Company saveCompany(Company company) {
+        if(companyRepository.existsByCompanyName(company.getCompanyName())){
+            throw new ResourceAlreadyExistsException("A Company already exists with this name : "
+                    + company.getCompanyName());
+        }
         return companyRepository.save(company);
     }
 
@@ -80,7 +86,8 @@ public class CompanyService {
     }
 
     public CompanyDetailsVO getCompanyDetails(Long companyId) {
-        Company company = companyRepository.findById(companyId).orElseThrow();
+        Company company = companyRepository.findById(companyId)
+                .orElseThrow(()->new ResourceNotFoundException("Company not found with ID : " + companyId));
 
         List<Department> department = restTemplate.
                 exchange("http://DEPARTMENT-SERVICE/departments/companies/" + companyId,
